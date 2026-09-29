@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>ことばメモ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 一覧 -->
+<section id="list-view" class="view">
+  <ul id="word-list"></ul>
+  <button id="add-btn" type="button" aria-label="追加">＋</button>
+</section>
+
+<!-- 入力 -->
+<section id="form-view" class="view" hidden>
+  <form id="word-form" autocomplete="off">
+    <input id="word-input" type="text" placeholder="単語">
+    <textarea id="meaning-input" placeholder="意味"></textarea>
+    <button type="submit">保存</button>
+  </form>
+</section>
+
+<!-- 詳細 -->
+<section id="detail-view" class="view" hidden>
+  <h1 id="detail-word"></h1>
+  <p id="detail-meaning"></p>
+</section>
+
+<!-- 長押しメニュー -->
+<div id="sheet" hidden>
+  <div id="sheet-backdrop"></div>
+  <div id="sheet-panel">
+    <button id="sheet-edit" type="button">編集</button>
+    <button id="sheet-delete" type="button">削除</button>
+    <button id="sheet-cancel" type="button">キャンセル</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
