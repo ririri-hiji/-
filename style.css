@@ -1,0 +1,156 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* 一覧 */
+#list-view {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+
+#word-list {
+  list-style: none;
+}
+
+#word-list li {
+  padding: 12px 16px;
+  border-bottom: 1px solid #222;
+  overflow-wrap: anywhere;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#word-list li:active {
+  background: #111;
+}
+
+#add-btn {
+  position: fixed;
+  right: calc(20px + env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff;
+  color: #000;
+  font-size: 26px;
+  line-height: 52px;
+}
+
+/* 入力 */
+#word-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+#word-form input,
+#word-form textarea {
+  width: 100%;
+  padding: 10px;
+  background: #000;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 16px; /* iOSの自動ズーム防止 */
+}
+
+#word-form textarea {
+  min-height: 40vh;
+  resize: vertical;
+}
+
+#word-form button {
+  padding: 12px;
+  background: #fff;
+  color: #000;
+  border-radius: 6px;
+}
+
+/* 詳細 */
+#detail-view {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  padding: calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+}
+
+#detail-word {
+  font-size: 18px;
+  font-weight: normal;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+
+#detail-meaning {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
+/* 長押しメニュー */
+#sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+
+#sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+#sheet-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  background: #1a1a1a;
+  border-radius: 12px 12px 0 0;
+}
+
+#sheet-panel button {
+  padding: 14px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+#sheet-panel button:last-child {
+  border-bottom: none;
+}
+
+#sheet-delete {
+  color: #ff453a;
+}
