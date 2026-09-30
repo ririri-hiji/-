@@ -14,22 +14,84 @@
   const detailWord = $('detail-word');
   const detailMeaning = $('detail-meaning');
   const sheet = $('sheet');
+  const errorBox = $('error');
+
+  // ---------- エラー表示 ----------
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.hidden = false;
+  }
+
+  errorBox.addEventListener('click', () => {
+    errorBox.hidden = true;
+  });
 
   // ---------- データ ----------
 
+  // 読み込みに失敗したときは、元のデータを上書きしないよう保存を止める
+  let saveBlocked = false;
   let words = load();
 
-  function load() {
-    try {
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      return Array.isArray(data) ? data : [];
-    } catch (e) {
-      return [];
-    }
+  // 端末の空き容量が少ないときなどに、データが自動で消されにくくする
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().catch(() => {});
   }
 
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+  function isValidWord(w) {
+    return w && typeof w.id === 'string' && typeof w.word === 'string' && typeof w.meaning === 'string';
+  }
+
+  function load() {
+    let raw;
+    try {
+      raw = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+      saveBlocked = true;
+      showError('保存データを読み込めませんでした。データを守るため保存を停止しています。アプリを終了して、もう一度開いてください。');
+      return [];
+    }
+    if (raw === null) return []; // まだ何も登録していない
+
+    let data = null;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      // 壊れたデータは下で扱う
+    }
+    const valid = Array.isArray(data) ? data.filter(isValidWord) : [];
+    if (Array.isArray(data) && valid.length === data.length) return valid;
+
+    // 壊れた部分がある場合は、元のデータを別の名前で残してから読める分だけ使う
+    try {
+      localStorage.setItem(STORAGE_KEY + '.broken.' + Date.now(), raw);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(valid));
+      showError('保存データの一部が壊れていたため、読み込めた単語だけを表示しています。');
+    } catch (e) {
+      saveBlocked = true;
+      showError('保存データが壊れていて読み込めませんでした。データを守るため保存を停止しています。');
+    }
+    return valid;
+  }
+
+  // 保存に成功したときだけ画面のデータを更新する
+  function persist(next) {
+    if (saveBlocked) {
+      showError('保存データを正しく読み込めなかったため、保存を停止しています。アプリを終了して、もう一度開いてください。');
+      return false;
+    }
+    try {
+      const json = JSON.stringify(next);
+      localStorage.setItem(STORAGE_KEY, json);
+      if (localStorage.getItem(STORAGE_KEY) !== json) throw new Error('verify failed');
+      words = next;
+      return true;
+    } catch (e) {
+      showError(e && e.name === 'QuotaExceededError'
+        ? '保存できませんでした。保存容量が不足しています。'
+        : '保存できませんでした。もう一度お試しください。');
+      return false;
+    }
   }
 
   function findWord(id) {
@@ -169,17 +231,16 @@
     const state = history.state || {};
     const existing = state.id ? findWord(state.id) : null;
 
-    if (existing) {
-      existing.word = word;
-      existing.meaning = meaning;
-    } else {
-      words.push({
+    const next = existing
+      ? words.map((w) => (w.id === existing.id ? { ...w, word, meaning } : w))
+      : words.concat({
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
         word,
         meaning,
       });
-    }
-    save();
+
+    // 失敗したときは入力画面に残り、入力内容を失わないようにする
+    if (!persist(next)) return;
     wordInput.blur();
     meaningInput.blur();
     history.back();
@@ -194,8 +255,7 @@
 
   $('sheet-delete').addEventListener('click', () => {
     const id = history.state.id;
-    words = words.filter((w) => w.id !== id);
-    save();
+    persist(words.filter((w) => w.id !== id));
     history.back();
   });
 
