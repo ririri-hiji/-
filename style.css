@@ -105,14 +105,14 @@ button {
 }
 
 #detail-word {
-  font-size: 38px;
+  font-size: 34px;
   font-weight: normal;
   margin-bottom: 16px;
   overflow-wrap: anywhere;
 }
 
 #detail-meaning {
-  font-size: 30px;
+  font-size: 26px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.7;
